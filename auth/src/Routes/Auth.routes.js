@@ -6,7 +6,8 @@ import {
 } from "../Middleware/validation.middlware.js";
 import {
     register,
-    googleAuthCallback
+    googleAuthCallback,
+    login
 } from "../Controller/auth.controller.js";
 const router = Router();
 
@@ -28,5 +29,5 @@ router.get(
 
   googleAuthCallback,
 );
-
+router.post("/login", login);
 export default router;

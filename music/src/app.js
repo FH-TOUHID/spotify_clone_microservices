@@ -1,22 +1,29 @@
 import express from "express";
-import authRoutes from "./Routes/Auth.routes.js";
-import passport from "./config/passport.js";
+
 import cors from "cors";
 
+import cookieParser from "cookie-parser";
+
+import musicRoutes from "./routes/music.routes.js";
+
 const app = express();
+
 app.use(
   cors({
     origin: "http://localhost:5173",
-    credentials: true,
-  })
-);
 
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 
-app.use(passport.initialize());
+app.use(cookieParser());
 
-app.use("/api/auth", authRoutes);
+app.use(
+  "/api/music",
 
+  musicRoutes,
+);
 
 export default app;

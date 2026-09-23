@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { publishToQueue } from "../broker/rabbit.js";
 
 async function register(req, res) {
-  const { email, password, fullname } = req.body;
+  const { email, password, fullname, role = "user" } = req.body;
 
   const isUserAlreadyExists = await userModel.findOne({ email });
 
@@ -25,6 +25,8 @@ async function register(req, res) {
       firstName: fullname.firstName,
       lastName: fullname.lastName,
     },
+
+    role,
   });
 
   const token = jwt.sign(
@@ -154,5 +156,33 @@ async function googleAuthCallback(req, res) {
     token,
   });
 }
+async function login(req,res) {
+  const { email, password } = req.body;
 
-export { register, googleAuthCallback };
+  const user = await userModel.findOne({ email });
+
+  if (!user) {
+    return res.status(400).json({
+      message: "User not found",
+    });
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if(!isPasswordValid){
+    return res.status(400).json({
+      message: "Invalid password",
+    });
+
+  }
+  return res.status(200).json({
+    message: "Login successful",
+    user: {
+      id: user._id,
+      email: user.email,
+      fullname: user.fullname,
+      role: user.role,
+    },
+  }); 
+
+}
+export { register, googleAuthCallback ,login};
